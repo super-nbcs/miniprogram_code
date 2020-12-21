@@ -1,0 +1,8 @@
+.idea
+*.iml
+./core/target/*
+./core/*.iml
+./start/target/*
+./start/*.iml
+./wx/target/*
+./wx/*.iml

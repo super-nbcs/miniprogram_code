@@ -1,0 +1,91 @@
+project:
+  name: 开发环境
+swagger:
+  enable: true
+spring:
+  rabbitmq:
+    host: 192.168.1.14
+    port: 5672
+    username: admin
+    password: huigou
+    publisher-confirms: true #  消息发送到交换机确认机制,是否确认回调
+    publisher-returns: true
+  devtools:
+    restart:
+      enabled: true
+  datasource:
+    name: druidDataSource
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: org.gjt.mm.mysql.Driver
+    url: jdbc:mysql://192.168.1.13:13306/mini?useUnicode=true&characterEncoding=UTF-8&useSSL=false
+    username: server
+    password: 123456
+    druid:
+      filters: stat
+      max-active: 100
+      initial-size: 1
+      max-wait: 60000
+      min-idle: 1
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      validation-query: select 1
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      pool-prepared-statements: true
+      max-open-prepared-statements: 50
+      max-pool-prepared-statement-per-connection-size: 20
+  jpa:
+    database: MYSQL
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+      naming:
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyComponentPathImpl
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        enable_lazy_load_no_trans: true
+        format-sql: true
+        dialect: com.zfw.core.dialect.MySQL5InnoDBUtf8Dialect
+  output:
+    ansi:
+      enabled: DETECT
+  redis:
+    database: 15
+    host: 192.168.1.14
+    port: 16379
+    password:
+    timeout: 10000ms
+    lettuce:
+      pool:
+        max-active: 20
+        max-idle: 20
+        min-idle: 0
+  http:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+  data:
+    redis:
+      repositories:
+        enabled: false
+
+  servlet:
+    multipart:
+      max-file-size: 20000MB
+      max-request-size: 200000MB
+
+logging:
+  level:
+    com.huigou: trace
+    root: info
+    org:
+      hibernate:
+        SQL: warn
+        type:
+          descriptor:
+            sql:
+              BasicBinder: trace
+
