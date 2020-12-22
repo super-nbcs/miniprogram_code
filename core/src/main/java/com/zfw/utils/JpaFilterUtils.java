@@ -1,8 +1,8 @@
 package com.zfw.utils;
 
+
 import com.zfw.core.constant.Constant;
 import com.zfw.core.convert.DateConvert;
-import com.zfw.core.entity.BaseEntity;
 import com.zfw.core.exception.GlobalException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
@@ -12,15 +12,16 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.Assert;
 
-import javax.persistence.criteria.*;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Field;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.zfw.core.constant.Constant.FAIL;
+
 
 /**
  * @Author:zfw
@@ -81,7 +82,7 @@ public class JpaFilterUtils {
      * @param o         如：t
      * @return          t对象上的id值
      */
-    public static Object getFieldValueByFieldName(String fieldName,Object o){
+    public static Object getFieldValueByFieldName(String fieldName, Object o){
         if ( o instanceof HibernateProxy) {
             o=Hibernate.unproxy(o);
         }
@@ -104,7 +105,7 @@ public class JpaFilterUtils {
      * @param o                 如：t
      *                          t.setId(1)
      */
-    public static void setFieldValueByFieldName(String fieldName,Object fieldValue,Object o){
+    public static void setFieldValueByFieldName(String fieldName, Object fieldValue, Object o){
         try {
             if ( o instanceof HibernateProxy) {
                 o=Hibernate.unproxy(o);
@@ -140,7 +141,7 @@ public class JpaFilterUtils {
         Class<?> toClass = to.getClass();
         Class<?> fromClass = from.getClass();
         if (!toClass.isInstance(from)){
-            throw new  IllegalArgumentException("对象： [" + fromClass.getName() +
+            throw new IllegalArgumentException("对象： [" + fromClass.getName() +
                     "] 不能转换成 [" + toClass.getName() + "]");
         }
         Field[] fromDeclaredFields = fromClass.getDeclaredFields();
@@ -212,7 +213,7 @@ public class JpaFilterUtils {
      * @param request
      * @param t
      */
-    public static Map<String, Object> filterParams(HttpServletRequest request,Class<?> t){
+    public static Map<String, Object> filterParams(HttpServletRequest request, Class<?> t){
         Class<?> superclass = t.getSuperclass();
         Map<String, Object> params = bySearchFilter(request);
         Map<String, Object> tempParams=new TreeMap<>();
@@ -239,12 +240,12 @@ public class JpaFilterUtils {
      * @param t
      * @return
      */
-    public static Map<String,String> filterValue(HttpServletRequest request,Class<?> t){
+    public static Map<String, String> filterValue(HttpServletRequest request, Class<?> t){
         Map<String, Object> params = filterParams(request, t);
         Map<String, String> tempParams=new TreeMap<>();
         params.forEach((k,v)->{
             //只处理第一个参数值,其余全部仍了
-            String value=v.getClass().isArray()?((String [])v)[0]:((String) v);
+            String value=v.getClass().isArray()?((String[])v)[0]:((String) v);
             if (!StringUtils.isBlank(value)){
                 tempParams.put(k,value);
             }else {
@@ -261,13 +262,13 @@ public class JpaFilterUtils {
      * @param t
      * @return
      */
-    public static Map<String,List<String>> filterManyValue(HttpServletRequest request,Class<?> t){
+    public static Map<String, List<String>> filterManyValue(HttpServletRequest request, Class<?> t){
         Map<String, Object> params = filterParams(request, t);
         Map<String, List<String>> tempParams=new TreeMap<>();
         params.forEach((k,v)->{
             List<String> values;
             if (v.getClass().isArray()){
-                values=Arrays.asList((String[]) v);
+                values= Arrays.asList((String[]) v);
             }else {
                 values= Arrays.asList((String) v);
             }
@@ -292,71 +293,64 @@ public class JpaFilterUtils {
         if (params.size()==0){
             return null;
         }
-        Specification<T> tSpecification = new Specification<T>() {
+        Specification<T> tSpecification = (Specification<T>) (root, query, criteriaBuilder) -> {
             List<Predicate> list = new ArrayList<>();
-
-            @Override
-            public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
-                params.forEach((k,v)->{
-                    Path<String> objectPath = root.get(k);
-                    Class<? extends Class<? extends String>> javaType = objectPath.type().getJavaType();
-
-
-                    //处理日期类型
-                    if (javaType.equals(Date.class)){
-                        if (v.contains(BETWEEN)){
-                            String[] between = v.split(BETWEEN);
-                            try {
-                                Date startDate = DateUtils.parseDateStrictly(between[0], DateConvert.pattern);
-                                Date endDate = DateUtils.parseDateStrictly(between[1], DateConvert.pattern);
-                                SimpleDateFormat sdf = new SimpleDateFormat(BaseEntity.DATE_FORMAT);
-                                list.add(criteriaBuilder.between(objectPath.as(String.class),sdf.format(startDate),sdf.format(endDate)));
-                            } catch (ParseException e) {
-                                throw new GlobalException(Constant.FAIL.CODE,Constant.FAIL.ZH_CODE+":日期格式为"+ Arrays.toString(DateConvert.pattern)+"中的一个，推荐【yyyy-MM-dd HH:mm:ss】",Constant.FAIL.EN_CODE);
-                            }
-                        }else {
-                            throw new GlobalException(Constant.FAIL.CODE,Constant.FAIL.ZH_CODE+":请遵守规定时间查询格式",Constant.FAIL.EN_CODE);
+            params.forEach((k,v)->{
+                Path<String> objectPath = root.get(k);
+                Class<? extends Class<? extends String>> javaType = objectPath.type().getJavaType();
+                //处理日期类型
+                if (javaType.equals(Date.class)){
+                    if (v.contains(BETWEEN)){
+                        String[] between = v.split(BETWEEN);
+                        try {
+                            Date startDate = DateUtils.parseDateStrictly(between[0], DateConvert.pattern);
+                            Date endDate = DateUtils.parseDateStrictly(between[1], DateConvert.pattern);
+                            list.add(criteriaBuilder.between(objectPath.as(Date.class),startDate,endDate));
+                        } catch (ParseException e) {
+                            throw new GlobalException(FAIL.CODE, FAIL.ZH_CODE+":日期格式为"+ Arrays.toString(DateConvert.pattern)+"中的一个，推荐【yyyy-MM-dd HH:mm:ss】", FAIL.EN_CODE);
+                        }
+                    }else {
+                        throw new GlobalException(FAIL.CODE, FAIL.ZH_CODE+":请遵守规定时间查询格式", FAIL.EN_CODE);
+                    }
+                }
+                //处理枚举类型
+                if (javaType.isEnum()){
+                    Constant[] values = Constant.values();
+                    for (Constant constant : values) {
+                        String name = constant.name();
+                        if (name.equals(v)){
+                            list.add(criteriaBuilder.equal(objectPath.as(String.class),constant.CODE));
                         }
                     }
-                    //处理枚举类型
-                    if (javaType.isEnum()){
-                        Constant[] values = Constant.values();
-                        for (Constant constant : values) {
-                            String name = constant.name();
-                            if (name.equals(v)){
-                                list.add(criteriaBuilder.equal(objectPath.as(String.class),constant.CODE));
-                            }
-                        }
-                    }
-                    //处理字符串类型
-                    if (javaType.equals(String.class)){
-                        if (StringUtils.endsWith(v, LIKE)){
+                }
+                //处理字符串类型
+                if (javaType.equals(String.class)){
+                    if (StringUtils.endsWith(v, LIKE)){
 //                            list.add(criteriaBuilder.like(root.get(k).as(String.class),"%"+StringUtils.removeEnd(v, LIKE)+"%"));
-                            list.add(criteriaBuilder.like(root.get(k).as(String.class),StringUtils.removeEnd(v, LIKE)+"%"));
-                        }else {
-                            list.add(criteriaBuilder.equal(root.get(k).as(String.class),v));
-                        }
+                        list.add(criteriaBuilder.like(root.get(k).as(String.class),StringUtils.removeEnd(v, LIKE)+"%"));
+                    }else {
+                        list.add(criteriaBuilder.equal(root.get(k).as(String.class),v));
                     }
-                    //处理integer类型
-                    if (javaType.equals(Integer.class)){
-                        if (StringUtils.endsWith(v, LIKE)){
+                }
+                //处理integer类型
+                if (javaType.equals(Integer.class)){
+                    if (StringUtils.endsWith(v, LIKE)){
 //                            list.add(criteriaBuilder.like(root.get(k).as(String.class),"%"+StringUtils.removeEnd(v, LIKE)+"%"));
-                            list.add(criteriaBuilder.like(root.get(k).as(String.class),StringUtils.removeEnd(v, LIKE)+"%"));
-                        }else {
-                            list.add(criteriaBuilder.equal(root.get(k).as(String.class),v));
-                        }
+                        list.add(criteriaBuilder.like(root.get(k).as(String.class),StringUtils.removeEnd(v, LIKE)+"%"));
+                    }else {
+                        list.add(criteriaBuilder.equal(root.get(k).as(Integer.class),v));
                     }
+                }
 
-                });
-                Predicate[] p = new Predicate[list.size()];
-                return criteriaBuilder.and(list.toArray(p));
-            }
+            });
+            Predicate[] p = new Predicate[list.size()];
+            return criteriaBuilder.and(list.toArray(p));
         };
 
         return tSpecification;
     }
 
-    public static Map<String, List<String>> addEquals2Map(Map<String,List<String>> equals, Map<String, List<String>> params){
+    public static Map<String, List<String>> addEquals2Map(Map<String, List<String>> equals, Map<String, List<String>> params){
         if (equals.isEmpty()){
             return params;
         }else {
@@ -372,104 +366,13 @@ public class JpaFilterUtils {
      * @param <T>
      * @return
      */
-    public static <T> Specification<T> dynamicSpecificationManyValues(HttpServletRequest request,Map<String,List<String>> equals, Class<T> zClass){
+    public static <T> Specification<T> dynamicSpecificationManyValues(HttpServletRequest request, Map<String, List<String>> equals, Class<T> zClass){
         Map<String, List<String>> params = filterManyValue(request, zClass);
         Map<String, List<String>> params1= addEquals2Map(equals,params);
         if (params1.size()==0){
             return null;
         }
-        Specification<T> tSpecification = new Specification<T>() {
-            List<Predicate> list = new ArrayList<>();
-            List<Predicate> listOr = new ArrayList<>();
-
-            @Override
-            public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
-                params1.forEach((k,v)->{
-                    Path<String> objectPath = root.get(k);
-                    Class<? extends Class<? extends String>> javaType = objectPath.type().getJavaType();
-
-
-                    //处理日期类型
-                    if (javaType.equals(Date.class)){
-                        if (v.get(0).contains(BETWEEN)){
-                            String[] between = v.get(0).split(BETWEEN);
-                            try {
-                                Date startDate = DateUtils.parseDateStrictly(between[0], DateConvert.pattern);
-                                Date endDate = DateUtils.parseDateStrictly(between[1], DateConvert.pattern);
-                                SimpleDateFormat sdf = new SimpleDateFormat(BaseEntity.DATE_FORMAT);
-                                list.add(criteriaBuilder.between(objectPath.as(String.class),sdf.format(startDate),sdf.format(endDate)));
-                            } catch (ParseException e) {
-                                throw new GlobalException(Constant.FAIL.CODE,Constant.FAIL.ZH_CODE+":日期格式为"+ Arrays.toString(DateConvert.pattern)+"中的一个，推荐【yyyy-MM-dd HH:mm:ss】",Constant.FAIL.EN_CODE);
-                            }
-                        }else {
-                            throw new GlobalException(Constant.FAIL.CODE,Constant.FAIL.ZH_CODE+":请遵守规定时间查询格式",Constant.FAIL.EN_CODE);
-                        }
-                    }
-                    //处理枚举类型
-                    if (javaType.isEnum()){
-                        Constant[] values = Constant.values();
-                        for (Constant constant : values) {
-                            String name = constant.name();
-                            if (name.equals(v.get(0))){
-                                list.add(criteriaBuilder.equal(objectPath.as(String.class),constant.CODE));
-                            }
-                        }
-                    }
-                    //处理字符串类型
-                    if (javaType.equals(String.class)){
-                        if (v.size()==1){
-                            if (StringUtils.endsWith(v.get(0),LIKE)){
-                                listOr.add(criteriaBuilder.like(root.get(k).as(String.class),StringUtils.removeEnd(v.get(0),LIKE)+"%"));
-                            }else {
-                                list.add(criteriaBuilder.equal(root.get(k).as(String.class),v.get(0)));
-                            }
-                        }else {
-                            for (String value : v) {
-                                if (StringUtils.endsWith(value,LIKE)){
-                                    Predicate like = criteriaBuilder.like(root.get(k).as(String.class), StringUtils.removeEnd(value, LIKE) + "%");
-                                    listOr.add(like);
-                                }else {
-                                    CriteriaBuilder.In<String> in = criteriaBuilder.in(root.get(k).as(String.class));
-                                    in.value(value);
-                                    list.add(in);
-                                }
-
-                            }
-                        }
-                    }
-                    //处理integer类型
-                    if (javaType.equals(Integer.class)){
-                        if (StringUtils.endsWith(v.get(0), LIKE)){
-                            list.add(criteriaBuilder.like(root.get(k).as(String.class),"%"+StringUtils.removeEnd(v.get(0), LIKE)+"%"));
-                        }else {
-                            if (v.size()==1){
-                                list.add(criteriaBuilder.equal(root.get(k).as(String.class),v.get(0)));
-                            }else if (v.size()>=1){
-                                CriteriaBuilder.In<String> in = criteriaBuilder.in(root.get(k).as(String.class));
-                                v.forEach(value ->in.value(value));
-                                list.add(in);
-                            }
-                        }
-                    }
-
-                });
-                Predicate[] p = new Predicate[list.size()];
-                Predicate and = criteriaBuilder.and(list.toArray(p));
-                Predicate[] orp = new Predicate[listOr.size()];
-                Predicate or = criteriaBuilder.or(listOr.toArray(orp));
-                if (list.size()!=0&&listOr.size()!=0){
-                    return query.where(and,or).getRestriction();
-                }
-                if (list.size()==0&&listOr.size()!=0){
-                    return query.where(or).getRestriction();
-                }
-                if (list.size()!=0&&listOr.size()==0){
-                    return query.where(and).getRestriction();
-                }
-                return criteriaBuilder.and(list.toArray(p));
-            }
-        };
-
+        Specification<T> tSpecification = new SpecificationImpl<>(params1);
         return tSpecification;
     }
 }
