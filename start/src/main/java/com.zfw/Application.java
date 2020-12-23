@@ -11,9 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 @ServletComponentScan(basePackages= {"com.zfw.servlet","com.zfw.filter"})
 @EnableJpaRepositories(basePackages={"com.zfw"})
 public class Application {
-
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }
-
 }
