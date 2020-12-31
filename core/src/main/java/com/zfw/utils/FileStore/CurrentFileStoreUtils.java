@@ -66,7 +66,7 @@ public class CurrentFileStoreUtils {
      * @return
      * @throws IOException
      */
-    public static Path createEmptyFile(String fileType, boolean isTemp) throws IOException {
+    public static Path createEmptyFile(String fileType, boolean isForever) throws IOException {
         String s = UUID.randomUUID().toString().replaceAll("-", "");
         if (!isBlank(fileType)) {
             s = s + (char) 46 + fileType;
@@ -75,7 +75,7 @@ public class CurrentFileStoreUtils {
         if (!Files.exists(source)) {
             Files.createFile(source);
         }
-        if (!isTemp) {
+        if (!isForever) {
             source.toFile().deleteOnExit();
         }
         return source;
@@ -204,26 +204,26 @@ public class CurrentFileStoreUtils {
      * @return
      * @throws IOException
      */
-    private static String createFile(MultipartFile file, boolean isTemp) throws IOException {
+    private static String createFile(MultipartFile file, boolean isForever) throws IOException {
         if (file == null) {
             throw new IOException("file不能为null");
         }
-        return createFile(file.getInputStream(), getExtensions(file.getOriginalFilename()), isTemp);
+        return createFile(file.getInputStream(), getExtensions(file.getOriginalFilename()), isForever);
     }
 
     /**
      * 上传文件到本地
      *
      * @param file
-     * @param isTemp 是否为临时文件
+     * @param isForever 是否为永久加密
      * @return
      * @throws IOException
      */
-    private static String createFile(File file, boolean isTemp) throws IOException {
+    private static String createFile(File file, boolean isForever) throws IOException {
         if (file == null) {
             throw new IOException("file不能为null");
         }
-        return createFile(new FileInputStream(file), getExtensions(file.getName()), isTemp);
+        return createFile(new FileInputStream(file), getExtensions(file.getName()), isForever);
     }
 
 
@@ -232,15 +232,15 @@ public class CurrentFileStoreUtils {
      *
      * @param inputStream
      * @param fileType    需指定文件后缀 如：jpa , png
-     * @param isTemp      是否为临时文件
+     * @param isForever      是否为永久存储
      * @return
      * @throws IOException
      */
-    private static String createFile(InputStream inputStream, String fileType, boolean isTemp) throws IOException {
+    private static String createFile(InputStream inputStream, String fileType, boolean isForever) throws IOException {
         if (inputStream == null) {
             throw new IOException("inputStream不能为null");
         }
-        Path source = createEmptyFile(fileType, isTemp);
+        Path source = createEmptyFile(fileType, isForever);
         Files.copy(inputStream, source, StandardCopyOption.REPLACE_EXISTING);
         String filePath = source.toString().replace(systemParentPath(), "").replace("\\", "/");
         return filePath;
@@ -251,31 +251,31 @@ public class CurrentFileStoreUtils {
      * base64存图片
      *
      * @param base64
-     * @param isTemp 是否为临时文件
+     * @param isForever 是否为永久文件
      * @return
      * @throws IOException
      */
-    private static String createFile(String base64, boolean isTemp) throws IOException {
+    private static String createFile(String base64, boolean isForever) throws IOException {
         if (StringUtils.isBlank(base64)) {
             throw new IOException("base64字符串不能为空");
         }
-        return base64.indexOf(",") == -1 ? createFileNoPrefix(base64, isTemp) : createFilePrefix(base64, isTemp);
+        return base64.indexOf(",") == -1 ? createFileNoPrefix(base64, isForever) : createFilePrefix(base64, isForever);
     }
 
     /**
      * 无前缀的base64文件
      *
      * @param base64NoPrefix
-     * @param isTemp         是否为临时文件
+     * @param isForever         是否为永久文件
      * @return
      * @throws IOException
      */
-    private static String createFileNoPrefix(String base64NoPrefix, boolean isTemp) throws IOException {
+    private static String createFileNoPrefix(String base64NoPrefix, boolean isForever) throws IOException {
         if (StringUtils.isBlank(base64NoPrefix)) {
             throw new IOException("base64字符串不能为空");
         }
         String base64Prefix = String.format("data:image/jpg;base64,%s", base64NoPrefix);
-        return createFilePrefix(base64Prefix, isTemp);
+        return createFilePrefix(base64Prefix, isForever);
     }
 
     /**
@@ -285,12 +285,12 @@ public class CurrentFileStoreUtils {
      * @return
      * @throws IOException
      */
-    private static String createFilePrefix(String base64Prefix, boolean isTemp) throws IOException {
+    private static String createFilePrefix(String base64Prefix, boolean isForever) throws IOException {
         if (isBase64(base64Prefix)) {
             throw new IOException("此字符串不是标准的base64编码");
         }
         String fileType = base64Prefix.split(",")[0].split(";")[0].split("/")[1];
-        Path emptyFile = createEmptyFile(fileType, isTemp);
+        Path emptyFile = createEmptyFile(fileType, isForever);
         Boolean aBoolean = decryptByBase64(base64Prefix, emptyFile);
         if (aBoolean) {
             return emptyFile.toString().replace(systemParentPath(), "").replace("\\", "/");
@@ -471,16 +471,16 @@ public class CurrentFileStoreUtils {
     /**
      * nuc加密方式不一样，所以单写一个
      * @param base64Prefix
-     * @param isTemp
+     * @param isForever
      * @return
      * @throws IOException
      */
-    public static String createFilePrefixForNuc(String base64Prefix, boolean isTemp) throws IOException {
+    public static String createFilePrefixForNuc(String base64Prefix, boolean isForever) throws IOException {
         if (isBase64(base64Prefix)) {
             throw new IOException("此字符串不是标准的base64编码");
         }
         String fileType = base64Prefix.split(",")[0].split(";")[0].split("/")[1];
-        Path emptyFile = createEmptyFile(fileType, isTemp);
+        Path emptyFile = createEmptyFile(fileType, isForever);
         Boolean aBoolean = decryptByBase64ForNuc(base64Prefix, emptyFile);
         if (aBoolean) {
             return emptyFile.toString().replace(systemParentPath(), "").replace("\\", "/");
