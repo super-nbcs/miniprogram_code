@@ -63,6 +63,35 @@
                     <warName>${project.artifactId}</warName>
                 </configuration>
             </plugin>
+            <!-- Docker maven plugin -->
+
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>1.0.0</version>
+                <configuration>
+                    <!--镜像名字:版本-->
+                    <imageName>${docker.image.prefix}/${project.artifactId}:${project.version}</imageName>
+                    <!--依赖基础镜像-->
+                    <baseImage>huigou/jdk8</baseImage>
+                    <!--作者姓名-->
+                    <maintainer>zfw</maintainer>
+                    <workdir>/home</workdir>
+                    <workdir>v1</workdir>
+                    <cmd>["java","-Dfile.encoding=utf-8", "-jar", "${project.build.finalName}.jar"]</cmd>
+                    <!-- 指定Dockerfile 文件的位置 上面的配置和下Dockerfile里面的一样 二者只能选一 -->
+                    <!--<dockerDirectory>${project.basedir}/src/main/resources/docker</dockerDirectory>-->
+                    <resources>
+                        <resource>
+                            <targetPath>/</targetPath>
+                            <directory>${project.build.directory}</directory>
+                            <include>${project.build.finalName}.jar</include>
+                        </resource>
+                    </resources>
+                    <dockerHost>http://192.168.1.17:2375</dockerHost>
+                </configuration>
+            </plugin>
+            <!-- Docker maven plugin -->
         </plugins>
         <finalName>${project.artifactId}</finalName>
     </build>

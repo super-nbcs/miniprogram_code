@@ -37,6 +37,7 @@
         <fastjson.version>1.2.47</fastjson.version>
         <ant.version>1.10.5</ant.version>
         <thumbnailator.version>0.4.8</thumbnailator.version>
+        <docker.image.prefix>zfw</docker.image.prefix>
     </properties>
 
     <dependencyManagement>
@@ -153,7 +154,8 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
+    <!--mvn clean install -Dmaven.test.skip=true-->
+    <!--mvn clean install -Dmaven.test.skip=true docker:build-->
     <build>
         <plugins>
             <plugin>
@@ -181,6 +183,7 @@
                     <include>**/*.xls</include>
                     <include>**/*.xlsx</include>
                     <include>**/*.ftl</include>
+                    <include>**/*</include>
                 </includes>
             </resource>
         </resources>
