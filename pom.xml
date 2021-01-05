@@ -38,6 +38,7 @@
         <ant.version>1.10.5</ant.version>
         <thumbnailator.version>0.4.8</thumbnailator.version>
         <docker.image.prefix>zfw</docker.image.prefix>
+        <docker.dir>/home/v1/</docker.dir>
     </properties>
 
     <dependencyManagement>
