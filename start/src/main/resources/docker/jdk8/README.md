@@ -20,5 +20,14 @@ CMD java -version
 #!/usr/bin/env bash
 # 制作镜像命令，这条命令在Dockerfile同级目录下运行
 docker build -t zfw/jdk8 .
+
+
+# 查看生成镜像
+docker images
+
+REPOSITORY    TAG       IMAGE ID       CREATED          SIZE
+zfw/jdk8   latest       43321f906595   6 days ago       611MB
+centos        7         8652b9f0cb4c   7 weeks ago      204MB
 ```
+
 
