@@ -1,4 +1,4 @@
-FROM huigou/jdk8:latest
+FROM zfw/jdk8:latest
 MAINTAINER zfw
 LABEL description="描述"
 ADD /target/start.jar /home/v1/
