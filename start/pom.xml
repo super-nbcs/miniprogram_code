@@ -70,11 +70,11 @@
                 <artifactId>docker-maven-plugin</artifactId>
                 <version>1.0.0</version>
                 <configuration>
-                    <dockerHost>http://192.168.1.17:2375</dockerHost>
+                    <dockerHost>http://211.69.16.107:7003</dockerHost>
                     <!--镜像名字:版本-->
                     <imageName>${docker.image.prefix}/${project.artifactId}:${project.version}</imageName>
                     <!--依赖基础镜像-->
-                    <baseImage>huigou/jdk8</baseImage>
+                    <baseImage>zfw/jdk8</baseImage>
                     <!--作者姓名-->
                     <maintainer>zfw</maintainer>
                     <workdir>${docker.dir}</workdir>
