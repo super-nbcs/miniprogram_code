@@ -49,7 +49,13 @@ nohup java -Xmx1024m -Xms1024m -jar start.jar > $LOG_1 2>&1 &
 </plugin>
 
 ```
-##### 2.登录宿主机，查看，运行：
+##### 2.制作镜像并上传到远程docker：
+```$xslt
+mvn clean package -Dmaven.test.skip=true docker:build
+或
+mvn clean install -Dmaven.test.skip=true docker:build
+```
+##### 3.登录宿主机，查看，运行：
 ```
 # 查看
 docker images
