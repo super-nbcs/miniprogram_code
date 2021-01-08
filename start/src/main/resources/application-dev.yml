@@ -78,14 +78,14 @@ spring:
       max-request-size: 200000MB
 
 logging:
-  level:
-    com.huigou: trace
-    root: info
-    org:
-      hibernate:
-        SQL: warn
-        type:
-          descriptor:
-            sql:
-              BasicBinder: trace
-
+  config: classpath:logger/logback-spring.xml
+#  level:
+#    com.zfw: trace
+#    root: info
+#    org:
+#      hibernate:
+#        SQL: warn
+#        type:
+#          descriptor:
+#            sql:
+#              BasicBinder: trace

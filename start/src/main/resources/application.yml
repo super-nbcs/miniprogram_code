@@ -24,5 +24,3 @@ wx:
     appId: wxdb6dad1f417f13e6
     secret: 59cc04267a0f24ea879d4acdad955cf7
     code2Session_api: https://api.weixin.qq.com/sns/jscode2session?appid=${wx.mini.appId}&secret=${wx.mini.secret}&js_code=%s&grant_type=authorization_code
-logging:
-  config: classpath:logger/logback-spring.xml

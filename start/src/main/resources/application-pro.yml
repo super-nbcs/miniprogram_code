@@ -76,6 +76,7 @@ spring:
       max-request-size: 200000MB
 
 logging:
+  config: classpath:logger/logback-spring.xml
   level:
     root: error
     org:
