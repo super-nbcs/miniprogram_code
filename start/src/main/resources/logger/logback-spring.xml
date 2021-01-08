@@ -6,9 +6,9 @@
 <configuration scan="true" scanPeriod="10 seconds">
     <!--所有的日志输出到哪个目录-->
     <property name="log.path" value="logs"/>
-    <!-- 日志文件多大一回滚  all.log日志不用-->
+    <!-- 日志文件多大一回滚  all.log日志自定义-->
     <property name="max.file.size" value="100MB"/>
-    <!--日志文件保留天数 all.log日志不用 -->
+    <!--日志文件保留天数 all.log日志自定义 -->
     <property name="max.history" value="7"/>
 
     <contextName>logback</contextName>
