@@ -1,5 +1,7 @@
 package com.zfw.core.service;
 
+import com.zfw.core.common.Assert;
+
 /**
  * 公用的Service
  * @author zfw
@@ -7,6 +9,6 @@ package com.zfw.core.service;
  * @param <T>
  * @param <ID>
  */
-public interface ICommonService<T,ID> extends IBaseService<T, ID> {
+public interface ICommonService<T,ID> extends IBaseService<T, ID>, Assert {
 
 }
