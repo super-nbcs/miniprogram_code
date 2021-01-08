@@ -1,7 +1,6 @@
-package com.zfw.core.sys.common;
+package com.zfw.core.common;
 
 import com.zfw.core.exception.GlobalException;
-import com.zfw.core.sys.controller.AnalysisData;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Optional;
