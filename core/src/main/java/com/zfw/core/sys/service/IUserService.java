@@ -20,6 +20,7 @@ public interface IUserService extends ICommonService<User,Integer> {
     List<User> findByPhotoIsNotNull();
     List<User> findByPhotoFlag(Integer photoFlag);
     User findTop1ByMiniOpenId(String miniOpenId);
+    boolean existsByMiniOpenId(String miniOpenId);
     /**
      * 获取用户所具有的角色，以及权限
      * @param userId

@@ -100,6 +100,11 @@ public class UserServiceImpl extends CommonServiceImpl<User, Integer> implements
     }
 
     @Override
+    public boolean existsByMiniOpenId(String miniOpenId) {
+        return iUserDao.existsByMiniOpenId(miniOpenId);
+    }
+
+    @Override
     public User getUserRole(Integer userId) {
         if (!this.existsById(userId)) {
             throw new GlobalException(NOT_FOUND_ID);

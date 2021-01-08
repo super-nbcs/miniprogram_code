@@ -17,6 +17,7 @@ public interface IUserDao extends ICommonDao<User, Integer> {
     User findByUserName(String userName);
 
     User findTop1ByMiniOpenId(String miniOpenId);
+    boolean existsByMiniOpenId(String miniOpenId);
 
     /**
      * 判断手机号是否已注册

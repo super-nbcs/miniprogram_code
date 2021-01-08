@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 
+import java.util.Optional;
+
 /**
  * @Author:zfw
  * @Date:2020-12-17
@@ -38,6 +40,7 @@ public class WxController extends BaseController {
         JSONObject data = JSONObject.parseObject(s);
         String openid = data.getString("openid");
         User user = iUserService.findTop1ByMiniOpenId(openid);
+
         if (user == null) {
             user = new User();
         } else {
@@ -76,13 +79,12 @@ public class WxController extends BaseController {
 
         String openId = wxMiniUserInfo.getOpenId();
         User user = iUserService.findTop1ByMiniOpenId(openId);
-        if (user == null) {
-            user = new User();
-            user.setGender(wxMiniUserInfo.getGender()).setName(wxMiniUserInfo.getNickName());
-            user.setPhoto(wxMiniUserInfo.getAvatarUrl());
-            user.setUserName(openId).setDeptId(3).setRoleId(2).setMiniOpenId(openId);
+        user = Optional.ofNullable(user).orElse(new User().setGender(wxMiniUserInfo.getGender()).setName(wxMiniUserInfo.getNickName())
+                .setPhoto(wxMiniUserInfo.getAvatarUrl()).setUserName(openId).setDeptId(3).setRoleId(2).setMiniOpenId(openId)
+        );
+        if (!iUserService.existsByMiniOpenId(openId)) {
             iUserService.createUser(user);
-        }else {
+        } else {
             user.setGender(wxMiniUserInfo.getGender()).setName(wxMiniUserInfo.getNickName());
             user.setPhoto(wxMiniUserInfo.getAvatarUrl());
             iUserService.save(user);
