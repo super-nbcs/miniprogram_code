@@ -64,7 +64,9 @@
                 </configuration>
             </plugin>
             <!-- Docker maven plugin -->
+            <!--制作镜像推送到远程docker-->
             <!--mvn clean package -Dmaven.test.skip=true docker:build-->
+            <!--mvn clean install -Dmaven.test.skip=true docker:build-->
             <plugin>
                 <groupId>com.spotify</groupId>
                 <artifactId>docker-maven-plugin</artifactId>
