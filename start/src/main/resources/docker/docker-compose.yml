@@ -1,4 +1,4 @@
-version: '3' # 此处
+version: '3' # version要根据compose版本来定
 services:
   start:
     image: zfw/start:1.0.0
@@ -7,3 +7,4 @@ services:
     container_name: start_10210
     volumes:
       - /home/v1/logs/start_10210:/home/v1/logs
+      - /mydata/imgs:/mydata/imgs/
