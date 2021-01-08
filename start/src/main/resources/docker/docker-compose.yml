@@ -1,0 +1,9 @@
+version: '3' # 此处
+services:
+  start:
+    image: zfw/start:1.0.0
+    ports:
+      - "10120:10120"
+    container_name: start_10210
+    volumes:
+      - /home/v1/logs/start_10210:/home/v1/logs
