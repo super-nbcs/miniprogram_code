@@ -1,0 +1,21 @@
+fileStore:
+  dir:
+    windows: Y:\
+    linux: /mydata/imgs/
+  zip:
+    windows: Y:\zip\
+    linux: /mydata/zip/
+  unzip:
+    windows: Y:\unzip\
+    linux: /mydata/unzip/
+  # 图片备份文件夹
+  back:
+    windows: Y:\back\
+    linux: /mydata/imgs/back/
+
+image:
+  size: 2097152
+  width: 960
+  height: 960
+  format: jpg
+  quality: 0.9
