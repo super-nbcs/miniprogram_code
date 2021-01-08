@@ -6,3 +6,4 @@
 ./start/*.iml
 ./wx/target/*
 ./wx/*.iml
+./logs
