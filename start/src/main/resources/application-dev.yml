@@ -89,3 +89,28 @@ logging:
 #          descriptor:
 #            sql:
 #              BasicBinder: trace
+
+#以下为 访问日志 配置
+server:
+  tomcat:
+    #   日志存放主目录 如不指定放到了spring boot 临时目录中
+    basedir: ${access.logger.dir}
+    accesslog:
+      # 开启访问日志
+      enabled: true
+      #  访问日志放在了${basedir}/tomcat-access下
+      directory: tomcat-access
+  jetty:
+    accesslog:
+      enabled: true
+      filename: ${access.logger.dir}/jetty-access/access.yyyy_mm_dd.log
+      file-date-format: yyyy-MM-dd
+      # 保留多少天，默认15天
+      retention-period: 15
+      date-format: yyyy-MM-dd HH:mm:ss
+      # 时区
+      time-zone: Asia/Shanghai
+      log-latency: false
+      # 是否在原文件里追加
+      append: true
+      extended-format: false
