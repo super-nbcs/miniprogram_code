@@ -91,6 +91,10 @@ logging:
 #              BasicBinder: trace
 
 #以下为 访问日志 配置
+# 访问日志文件放到哪个目录，在这将目录和logback配置到一起
+access:
+  logger:
+    dir: logs
 server:
   tomcat:
     #   日志存放主目录 如不指定放到了spring boot 临时目录中
@@ -103,7 +107,7 @@ server:
   jetty:
     accesslog:
       enabled: true
-      filename: ${access.logger.dir}/jetty-access/access.yyyy_mm_dd.log
+      filename: ${access.logger.dir}/access.yyyy_mm_dd.log
       file-date-format: yyyy-MM-dd
       # 保留多少天，默认15天
       retention-period: 15

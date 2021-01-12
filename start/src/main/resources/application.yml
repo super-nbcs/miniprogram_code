@@ -1,8 +1,5 @@
 server:
   port: 10120
-
-
-
 spring:
   profiles:
     active: dev
@@ -28,7 +25,3 @@ wx:
     secret: 59cc04267a0f24ea879d4acdad955cf7
     code2Session_api: https://api.weixin.qq.com/sns/jscode2session?appid=${wx.mini.appId}&secret=${wx.mini.secret}&js_code=%s&grant_type=authorization_code
 
-# 访问日志文件放到哪个目录，在这将目录和logback配置到一起
-access:
-  logger:
-    dir: logs
