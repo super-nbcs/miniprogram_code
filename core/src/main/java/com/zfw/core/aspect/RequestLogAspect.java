@@ -42,7 +42,7 @@ public class RequestLogAspect {
         logger.info("请求方法名  : {}.{}", joinPoint.getSignature().getDeclaringTypeName(), joinPoint.getSignature().getName());
         logger.info("请求ip      : {}", request.getRemoteAddr());
         Object[] args = joinPoint.getArgs();
-        logger.info("请求参数    : {}", JSONObject.toJSONString(args));
+        logger.info("请求参数    : {}", args);
     }
 
 
